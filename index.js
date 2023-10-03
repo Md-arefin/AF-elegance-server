@@ -20,21 +20,21 @@ app.get('/', (req, res) => {
 
 const verifyJWT = (req, res, next) => {
     const authorization = req.headers.authorization;
-  
+
     if (!authorization) {
-      return res.status(401).send({ error: "Unauthorized access!" });
+        return res.status(401).send({ error: "Unauthorized access!" });
     }
-  
+
     const token = authorization.split(" ")[1];
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, decoded) => {
-      if (error) {
-        return res.status(403).send({ error: "Unauthorized access!" });
-      }
-  
-      req.decoded = decoded;
-      next();
+        if (error) {
+            return res.status(403).send({ error: "Unauthorized access!" });
+        }
+
+        req.decoded = decoded;
+        next();
     });
-  };
+};
 
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -53,6 +53,7 @@ async function run() {
 
         // Collections
         const usersCollection = client.db("afElegance").collection("users");
+        const productsCollection = client.db("afElegance").collection("products");
 
         // user related API
         app.get("/all-users", async (req, res) => {
@@ -86,20 +87,39 @@ async function run() {
             res.send(result);
         });
 
+        // products related API
+        app.get("/mens", async(req, res) => {
+            const query = { type: "Men" }
+            const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get("/womens", async(req, res) => {
+            const query = { type: "Women" }
+            const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get("/kids", async(req, res) => {
+            const query = { type: "Kid" }
+            const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        })
+
         // review related API
         app.get("/get-review", async (req, res) => {
             const result = await reviewsCollection.find().toArray();
             res.send(result);
         });
 
-        app.post("/add-review", verifyJWT, async (req, res) => {
+        app.post("/add-review", async (req, res) => {
             const email = req.body.email;
             const review = req.body;
-            const decodedEmail = req.decoded.email;
+            // const decodedEmail = req.decoded.email;
 
-            if (email !== decodedEmail) {
-                return res.status(403).send({ error: "forbidden access" });
-            }
+            // if (email !== decodedEmail) {
+            //     return res.status(403).send({ error: "forbidden access" });
+            // }
             const result = await reviewsCollection.insertOne(review);
             res.send(result);
         });
