@@ -13,11 +13,10 @@ app.use(cors());
 
 // server starts
 app.get('/', (req, res) => {
-    res.send("AF_Elegance server is running...")
+    res.send("A&FElegance server is running...")
 });
 
 // Verify JWT
-
 const verifyJWT = (req, res, next) => {
     const authorization = req.headers.authorization;
 
@@ -35,7 +34,6 @@ const verifyJWT = (req, res, next) => {
         next();
     });
 };
-
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -83,7 +81,7 @@ async function run() {
             if (existingUser) {
                 return res.send({ message: "User already exist" });
             }
-            console.log("user", user);
+            // console.log("user", user);
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
