@@ -54,6 +54,7 @@ async function run() {
         // Collections
         const usersCollection = client.db("afElegance").collection("users");
         const productsCollection = client.db("afElegance").collection("products");
+        const reviewsCollection = client.db("afElegance").collection("reviews");
 
         // user related API
         app.get("/all-users", async (req, res) => {
