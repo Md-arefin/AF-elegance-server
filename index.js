@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.port || 5000;
 
 const uri = `mongodb+srv://${process.env.USER_Name}:${process.env.PASSWORD}@cluster0.bqstehg.mongodb.net/?retryWrites=true&w=majority`;
@@ -89,6 +89,14 @@ async function run() {
         // products related API
         app.get("/mens", async(req, res) => {
             const query = { type: "Men" }
+            const result = await productsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.get("/mens/:id", async(req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: new ObjectId(id) }
             const result = await productsCollection.find(query).toArray();
             res.send(result);
         })
