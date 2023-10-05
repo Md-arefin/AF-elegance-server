@@ -60,7 +60,7 @@ async function run() {
             res.send(result);
         });
 
-        app.get("/user/:email", async (req, res) => {
+        app.get("/users/admin/:email", async (req, res) => {
             const email = req.params.email;
             // const decodedEmail = req.decoded.email;
 
@@ -68,8 +68,8 @@ async function run() {
             //     return res.status(403).send({ error: "Forbidden access" });
             // }
             const query = { email: email };
-            const result = await usersCollection.findOne(query);
-
+            const user = await usersCollection.findOne(query);
+            const result = {admin: user?.role === "admin"}
             res.send(result);
         });
 
