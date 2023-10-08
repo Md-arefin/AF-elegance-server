@@ -132,6 +132,13 @@ async function run() {
             res.send(result);
         })
 
+        // TODO: verify Admin
+        app.post("/add-product", async(req, res)=>{
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result)
+        })
+
         // review related API
         app.get("/get-review", async (req, res) => {
             const result = await reviewsCollection.find().toArray();
