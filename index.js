@@ -133,11 +133,19 @@ async function run() {
         })
 
         // TODO: verify Admin
+        app.get('/all-products', async(req, res) =>{
+            const result = await productsCollection.find().toArray();
+            res.send(result);
+        })
+
+        // TODO: verify Admin
         app.post("/add-product", async(req, res)=>{
             const product = req.body;
             const result = await productsCollection.insertOne(product);
             res.send(result)
         })
+
+
 
         // review related API
         app.get("/get-review", async (req, res) => {
