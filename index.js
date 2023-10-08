@@ -69,7 +69,7 @@ async function run() {
             // }
             const query = { email: email };
             const user = await usersCollection.findOne(query);
-            const result = {admin: user?.role === "admin"}
+            const result = { admin: user?.role === "admin" }
             res.send(result);
         });
 
@@ -86,33 +86,33 @@ async function run() {
             res.send(result);
         });
 
-        app.patch('/users/admin/:id', async (req, res) =>{
+        app.patch('/users/admin/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = { _id: new ObjectId(id)};
+            const filter = { _id: new ObjectId(id) };
             const updateDoc = {
                 $set: {
                     role: 'admin'
                 },
             };
-            const result = await usersCollection.updateOne(filter,updateDoc);
+            const result = await usersCollection.updateOne(filter, updateDoc);
             res.send(result);
         });
 
-        app.delete('/users/:id', async(req, res)=>{
+        app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: new ObjectId(id) };
+            const query = { _id: new ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
             res.send(result);
         })
 
         // products related API
-        app.get("/mens", async(req, res) => {
+        app.get("/mens", async (req, res) => {
             const query = { type: "Men" }
             const result = await productsCollection.find(query).toArray();
             res.send(result);
         })
 
-        app.get("/mens/:id", async(req, res) => {
+        app.get("/mens/:id", async (req, res) => {
             const id = req.params.id;
             // console.log(id);
             const query = { _id: new ObjectId(id) }
@@ -120,32 +120,37 @@ async function run() {
             res.send(result);
         })
 
-        app.get("/womens", async(req, res) => {
+        app.get("/womens", async (req, res) => {
             const query = { type: "Women" }
             const result = await productsCollection.find(query).toArray();
             res.send(result);
         })
 
-        app.get("/kids", async(req, res) => {
+        app.get("/kids", async (req, res) => {
             const query = { type: "Kid" }
             const result = await productsCollection.find(query).toArray();
             res.send(result);
         })
 
-        // TODO: verify Admin
-        app.get('/all-products', async(req, res) =>{
+        app.get('/all-products', async (req, res) => {
             const result = await productsCollection.find().toArray();
             res.send(result);
         })
 
         // TODO: verify Admin
-        app.post("/add-product", async(req, res)=>{
+        app.post("/add-product", async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
             res.send(result)
         })
 
-
+        // TODO: verify Admin
+        app.delete('/delete-products/:id', async(req, res)=>{
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id)};
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
+        })
 
         // review related API
         app.get("/get-review", async (req, res) => {
