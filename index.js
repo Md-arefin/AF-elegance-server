@@ -53,6 +53,7 @@ async function run() {
         const usersCollection = client.db("afElegance").collection("users");
         const productsCollection = client.db("afElegance").collection("products");
         const reviewsCollection = client.db("afElegance").collection("reviews");
+        const cartsCollection = client.db("afElegance").collection("carts");
 
         // user related API
         app.get("/all-users", async (req, res) => {
@@ -193,6 +194,25 @@ async function run() {
             const result = await reviewsCollection.insertOne(review);
             res.send(result);
         });
+
+        // Cart related API
+        app.post('/carts', async(req, res) =>{
+            const items = req.body;
+            const result = await cartsCollection.insertOne(items);
+            res.send(result);
+        })
+
+        app.get('/carts/:email', async(req, res) =>{
+            const email = req.params.email;
+            if(!email){
+                res.send([]);
+            }
+            const query = { UserEmail: email };
+            const result = await cartsCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // 
 
         // JWT related api
         app.post("/jwt", async (req, res) => {
