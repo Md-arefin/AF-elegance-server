@@ -4,6 +4,7 @@ const app = express();
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.port || 5000;
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 const uri = `mongodb+srv://${process.env.USER_Name}:${process.env.PASSWORD}@cluster0.bqstehg.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -196,30 +197,43 @@ async function run() {
         });
 
         // Cart related API
-        app.get('/carts/:email', async(req, res) =>{
+        app.get('/carts/:email', async (req, res) => {
             const email = req.params.email;
-            if(!email){
+            if (!email) {
                 res.send([]);
             }
             const query = { UserEmail: email };
             const result = await cartsCollection.find(query).toArray();
             res.send(result);
         })
-       
-        
-        app.post('/carts', async(req, res) =>{
+
+        app.post('/carts', async (req, res) => {
             const items = req.body;
             const result = await cartsCollection.insertOne(items);
             res.send(result);
         })
 
-        app.delete("/carts/:id", async(req, res) =>{
+        app.delete("/carts/:id", async (req, res) => {
             const id = req.params.id;
-            const query = { _id: new ObjectId(id)};
-            const result= await cartsCollection.deleteOne(query);
+            const query = { _id: new ObjectId(id) };
+            const result = await cartsCollection.deleteOne(query);
             res.send(result)
         })
-    
+
+        // Payment related API
+        app.post('/create-payment-intent', async (req, res) => {
+            const { price } = req.body;
+            console.log(price);
+            const amount = price * 100;
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ["card"],
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret
+            });
+        })
 
         // JWT related api
         app.post("/jwt", async (req, res) => {
