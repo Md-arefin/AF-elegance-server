@@ -55,6 +55,7 @@ async function run() {
         const productsCollection = client.db("afElegance").collection("products");
         const reviewsCollection = client.db("afElegance").collection("reviews");
         const cartsCollection = client.db("afElegance").collection("carts");
+        const paymentsCollection = client.db("afElegance").collection("payments");
 
         // user related API
         app.get("/all-users", async (req, res) => {
@@ -221,10 +222,18 @@ async function run() {
         })
 
         // Payment related API
+
+        app.get('/get-payment/:email', async(req, res) =>{
+            const email = req.params.email;
+            const query = { email: email};
+            const result = await paymentsCollection.find(query).toArray()
+            res.send(result);
+        })
+
         app.post('/create-payment-intent', async (req, res) => {
             const { price } = req.body;
-            console.log(price);
-            const amount = price * 100;
+            // console.log(price);
+            const amount = parseFloat((price * 100).toFixed(2));
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: amount,
                 currency: "usd",
@@ -233,7 +242,17 @@ async function run() {
             res.send({
                 clientSecret: paymentIntent.client_secret
             });
-        })
+        });
+
+        app.post("/payment", async (req, res) => {
+            const payment = req.body;
+            const result= await paymentsCollection.insertOne(payment);
+            const query = {UserEmail: payment?.email }
+            // console.log(query);
+            const deleteResult = await cartsCollection.deleteMany(query)
+            console.log(deleteResult);
+            res.send({result, deleteResult});
+        });
 
         // JWT related api
         app.post("/jwt", async (req, res) => {
