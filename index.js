@@ -158,9 +158,28 @@ async function run() {
                     stock: updatedProduct.stock,
                     style: updatedProduct.style,
                     type: updatedProduct.type,
+
                 }
             };
             const result = await productsCollection.updateOne(filter, product, options);
+            res.send(result);
+        })
+
+        app.post("/add-review-product/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const productReview = req.body;
+            const review = {
+                $push: {
+                    reviews:{ 
+                        $each: [
+                            productReview
+                        ]
+                    }
+                }
+            }
+            const result = await productsCollection.updateOne(filter, review, options);
             res.send(result);
         })
 
@@ -223,9 +242,9 @@ async function run() {
 
         // Payment related API
 
-        app.get('/get-payment/:email', async(req, res) =>{
+        app.get('/get-payment/:email', async (req, res) => {
             const email = req.params.email;
-            const query = { email: email};
+            const query = { email: email };
             const result = await paymentsCollection.find(query).toArray()
             res.send(result);
         })
@@ -246,12 +265,12 @@ async function run() {
 
         app.post("/payment", async (req, res) => {
             const payment = req.body;
-            const result= await paymentsCollection.insertOne(payment);
-            const query = {UserEmail: payment?.email }
+            const result = await paymentsCollection.insertOne(payment);
+            const query = { UserEmail: payment?.email }
             // console.log(query);
             const deleteResult = await cartsCollection.deleteMany(query)
             console.log(deleteResult);
-            res.send({result, deleteResult});
+            res.send({ result, deleteResult });
         });
 
         // JWT related api
