@@ -136,8 +136,15 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/all-products', async (req, res) => {
-            const result = await productsCollection.find().toArray();
+        app.get('/sales', async (req, res) => {
+            const query = { sales: { $gt: 0, $lt: 40 } };
+            const result = await productsCollection.find(query).limit(10).toArray();
+            res.send(result);
+        })
+
+        app.get('/bestSales', async (req, res) => {
+            const query = { bestSales: "Yes" }
+            const result = await productsCollection.find(query).limit(10).toArray();
             res.send(result);
         })
 
