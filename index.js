@@ -54,6 +54,7 @@ async function run() {
         const usersCollection = client.db("afElegance").collection("users");
         const productsCollection = client.db("afElegance").collection("products");
         const reviewsCollection = client.db("afElegance").collection("reviews");
+        const favouritesCollection = client.db("afElegance").collection("favourite");
         const cartsCollection = client.db("afElegance").collection("carts");
         const paymentsCollection = client.db("afElegance").collection("payments");
 
@@ -269,9 +270,33 @@ async function run() {
             const query = { UserEmail: payment?.email }
             // console.log(query);
             const deleteResult = await cartsCollection.deleteMany(query)
-            console.log(deleteResult);
+            // console.log(deleteResult);
             res.send({ result, deleteResult });
         });
+
+        // favourite Product relatedAPI
+        app.get('/favourites/:email', async (req, res) => {
+            const email = req.params.email;
+            if (!email) {
+                res.send([]);
+            }
+            const query = { UserEmail: email };
+            const result = await favouritesCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.post('/favourites', async (req, res) => {
+            const items = req.body;
+            const result = await favouritesCollection.insertOne(items);
+            res.send(result);
+        })
+
+        app.delete("/favourites/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await favouritesCollection.deleteOne(query);
+            res.send(result)
+        })
 
         // JWT related api
         app.post("/jwt", async (req, res) => {
