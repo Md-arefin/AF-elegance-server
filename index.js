@@ -148,6 +148,18 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/all-products', async (req, res) => {
+            const result = await productsCollection.find().toArray();
+            res.send(result);
+        })
+
+        // app.get('/getPaidData/:email', async( req, res) =>{
+        //     const email = req.params.email;
+        //     const query = {email : email}
+        //     const result = await paymentsCollection.find(query).toArray();
+        //     res.send(result)
+        // })
+
         // TODO: verify Admin
         app.put('/edit-Product/:id', async (req, res) => {
             const id = req.params.id;
